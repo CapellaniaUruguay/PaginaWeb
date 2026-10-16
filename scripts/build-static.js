@@ -14,6 +14,8 @@ const config = await loadSiteConfig();
 // Only Uruguay pages and the assets they require are published.
 const entries = [
   "_headers",
+  "_redirects",
+  "googlea0d9ad70b387f3ca.html",
   "index.html",
   "galeria",
   "css",
@@ -106,6 +108,8 @@ if (config.production && configProblems.length) {
 await rm(dist, { recursive: true, force: true });
 await mkdir(dist, { recursive: true });
 for (const entry of entries) await copyEntry(entry);
+// Serve Google's exact .html URL through a plain-text asset to bypass HTML URL normalization.
+await cp(path.join(dist, "googlea0d9ad70b387f3ca.html"), path.join(dist, "googlea0d9ad70b387f3ca.txt"));
 
 for (const { file } of config.routes) {
   const target = path.join(dist, file);
