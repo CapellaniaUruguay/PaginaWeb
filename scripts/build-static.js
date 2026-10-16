@@ -1,7 +1,7 @@
 // Builds a portable static site in dist/ that any static host can serve
 // Any static host can serve the generated files. No server code is required.
 //
-//   npm run build              development/preview build (always noindex-safe, never needs a domain)
+//   npm run build              build using site.config.json (SITE_INDEXABLE=false for private previews)
 //   npm run build:production   fails unless site.config.json has a confirmed, non-provisional domain
 import { cp, mkdir, readdir, readFile, rm, stat, writeFile } from "node:fs/promises";
 import { existsSync } from "node:fs";

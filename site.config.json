@@ -2,7 +2,7 @@
   "siteUrl": "https://capellaniaempresarial-uy.org",
   "siteUrlConfirmed": true,
   "provisionalSiteUrls": [],
-  "indexable": false,
+  "indexable": true,
   "trailingSlash": true,
   "routes": {
     "/": "index.html",

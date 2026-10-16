@@ -70,7 +70,7 @@ El archivo `site.config.json` controla:
 - `trailingSlash`: formato de las rutas públicas.
 - `routes`: páginas incluidas en el build.
 
-Mientras el dominio no esté confirmado, el sitio se genera con `noindex` y el build de producción permanece bloqueado.
+El build de producción exige un dominio confirmado. `indexable` controla por separado la indexación; actualmente está habilitada para el dominio oficial.
 
 ## Mantenimiento de contenido
 
@@ -155,7 +155,11 @@ La versión anterior es la utilizada para esta validación. El comando automáti
 
 Solo se publica `dist/`, generado desde una lista explícita en `scripts/build-static.js`. El build rechaza archivos superiores a 25 MiB y rutas internas o privadas. No deben copiarse a esa carpeta dependencias, documentación, credenciales ni archivos de desarrollo. `.gitignore` no sustituye esta separación.
 
-`site.config.json` mantiene `indexable: false`: el dominio confirmado no autoriza habilitar la indexación. Mantener `noindex` y comprobar que el panel no defina `SITE_INDEXABLE=true` hasta recibir autorización expresa.
+`site.config.json` tiene `indexable: true`, autorizado para el dominio oficial. El build genera `index, follow` en ambas páginas y anuncia el sitemap en `robots.txt`.
+
+Para vistas previas que deban permanecer fuera de buscadores, definir `SITE_INDEXABLE=false` en su entorno de build. En producción, eliminar esa variable o definirla como `true`; un valor `false` prevalece sobre el archivo y vuelve a generar `noindex`. No retirar protecciones legítimas de recursos privados.
+
+Después de publicar esta corrección, comprobar por HTTP la home, `/galeria/`, `/robots.txt` y `/sitemap.xml` del dominio oficial. Revisar también que Cloudflare no añada un encabezado `X-Robots-Tag: noindex`. Luego enviar `https://capellaniaempresarial-uy.org/sitemap.xml` en la propiedad verificada de Google Search Console y solicitar inspección de las dos páginas. La autorización local de indexación no confirma que la versión pública haya sido actualizada.
 
 No se modifican DNS ni dominios mediante esta configuración. Una validación local correcta no confirma un despliegue remoto exitoso.
 
