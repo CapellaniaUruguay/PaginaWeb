@@ -3,7 +3,7 @@
 //
 //   npm run build              development/preview build (always noindex-safe, never needs a domain)
 //   npm run build:production   fails unless site.config.json has a confirmed, non-provisional domain
-import { cp, mkdir, readdir, readFile, rm, writeFile } from "node:fs/promises";
+import { cp, mkdir, readdir, readFile, rm, stat, writeFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import path from "node:path";
 import { loadSiteConfig, productionProblems, root } from "./site-config.js";
@@ -81,9 +81,12 @@ async function listFiles(dir) {
 async function scanDist() {
   const problems = [];
   const provisional = config.provisionalSiteUrls || [];
-  for (const file of (await listFiles(dist)).filter(name => TEXT_FILE.test(name))) {
-    const content = await readFile(file, "utf8");
+  for (const file of await listFiles(dist)) {
     const relative = path.relative(dist, file).replaceAll("\\", "/");
+    if ((await stat(file)).size > 25 * 1024 * 1024) problems.push(`${relative}: supera el límite de 25 MiB de Cloudflare.`);
+    if (/(^|\/)(node_modules|\.git|\.wrangler|scripts)(\/|$)|(^|\/)\.env|\.(pem|key)$/i.test(relative)) problems.push(`${relative}: archivo interno o privado no publicable.`);
+    if (!TEXT_FILE.test(file)) continue;
+    const content = await readFile(file, "utf8");
     if (/\{\{[A-Z_]+\}\}/.test(content)) problems.push(`${relative}: quedan marcadores {{...}} sin completar.`);
     if (content.includes("capellania.org.py")) problems.push(`${relative}: contiene URLs de Capellanía Paraguay.`);
     if (config.production) {

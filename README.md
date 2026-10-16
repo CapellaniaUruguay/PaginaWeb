@@ -9,7 +9,7 @@ Sitio web institucional de Capellanía Empresarial Uruguay. Está desarrollado c
 - **JavaScript nativo** para navegación móvil, video, galería y mejoras de interacción.
 - **JSON** para administrar el contenido de la galería.
 - **Node.js y npm** únicamente para generar y validar la versión publicable.
-- **Cloudflare Pages** como plataforma prevista de alojamiento.
+- **Cloudflare Workers con Static Assets** como plataforma de publicación.
 
 No utiliza React, Vue, Next.js, Tailwind, bases de datos ni APIs privadas.
 
@@ -37,7 +37,7 @@ galeria/      Página independiente de la galería.
 scripts/      Build estático y validación de configuración.
 index.html    Página principal.
 site.config.json  Dominio, indexación y rutas públicas.
-_headers      Encabezados de seguridad para Cloudflare Pages.
+_headers      Encabezados de seguridad para los recursos estáticos de Cloudflare.
 ```
 
 La carpeta `dist/` se genera automáticamente y no debe editarse ni subirse a Git.
@@ -52,7 +52,7 @@ El proyecto fue verificado con Node.js `22.16.0` y npm `10.9.2`.
 ## Ejecución local
 
 ```bash
-npm install
+npm ci
 npm run build
 npx serve dist
 ```
@@ -124,19 +124,40 @@ npm run build:production
 
 El build de producción se detiene si el dominio continúa marcado como provisional.
 
-## Despliegue en Cloudflare Pages
+## Despliegue en Cloudflare Workers con Static Assets
 
-Conectar este repositorio desde el panel de Cloudflare Pages y utilizar:
+El flujo de publicación utiliza Workers Builds y `npx wrangler deploy`, no Cloudflare Pages. El sitio sigue siendo HTML, CSS y JavaScript estáticos; no necesita un servidor ni un archivo de entrada Worker.
+
+`wrangler.jsonc` fija el recurso `paginaweb`, la fecha de compatibilidad `2026-10-16` y `assets.directory: "./dist"`. No ejecutar el despliegue con `--assets .` ni desde otra carpeta.
+
+En el panel del Worker, verificar antes de autorizar la publicación:
 
 ```text
+Repositorio: CapellaniaUruguay/PaginaWeb
+Rama de producción: main
+Directorio raíz: raíz del repositorio (dejar vacío o / según el panel)
 Comando de build: npm run build:production
-Directorio de salida: dist
-Directorio raíz: /
+Comando de despliegue: npx wrangler deploy --config wrangler.jsonc
+Worker esperado: paginaweb
 ```
 
-Para una vista previa antes de confirmar el dominio puede utilizarse `npm run build`, que mantiene `noindex`.
+El build también puede ejecutarse con `npm run build` para una vista previa. Workers Builds debe tener un comando de build explícito; la configuración de assets no genera `dist/` por sí sola.
 
-Cloudflare Pages instalará las dependencias declaradas en `package-lock.json`, ejecutará el comando configurado y publicará únicamente el contenido generado en `dist/`.
+Validación local sin publicar (Wrangler se descarga temporalmente, sin añadir dependencias al proyecto):
+
+```bash
+npm ci
+npm run build
+npx --yes wrangler@4.151.1 deploy --config wrangler.jsonc --dry-run
+```
+
+La versión anterior es la utilizada para esta validación. El comando automático `npx wrangler deploy` puede resolver otra versión si Cloudflare no la fija; repetir el dry run si cambia la herramienta.
+
+Solo se publica `dist/`, generado desde una lista explícita en `scripts/build-static.js`. El build rechaza archivos superiores a 25 MiB y rutas internas o privadas. No deben copiarse a esa carpeta dependencias, documentación, credenciales ni archivos de desarrollo. `.gitignore` no sustituye esta separación.
+
+`site.config.json` mantiene `indexable: false`: el dominio confirmado no autoriza habilitar la indexación. Mantener `noindex` y comprobar que el panel no defina `SITE_INDEXABLE=true` hasta recibir autorización expresa.
+
+No se modifican DNS ni dominios mediante esta configuración. Una validación local correcta no confirma un despliegue remoto exitoso.
 
 ## Enlaces externos
 

@@ -34,3 +34,6 @@ yarn-error.log*
 # Sistema operativo
 .DS_Store
 Thumbs.db
+
+# Caché local de Cloudflare Wrangler
+.wrangler/
