@@ -1,5 +1,5 @@
 // Builds a portable static site in dist/ that any static host can serve
-// (Apache, Nginx, Netlify, Cloudflare Pages, Vercel...). No server code is required.
+// Any static host can serve the generated files. No server code is required.
 //
 //   npm run build              development/preview build (always noindex-safe, never needs a domain)
 //   npm run build:production   fails unless site.config.json has a confirmed, non-provisional domain
@@ -13,6 +13,7 @@ const config = await loadSiteConfig();
 
 // Only Uruguay pages and the assets they require are published.
 const entries = [
+  "_headers",
   "index.html",
   "galeria",
   "css",

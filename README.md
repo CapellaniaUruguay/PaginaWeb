@@ -1,44 +1,55 @@
 # Capellanía Empresarial Uruguay
 
-Sitio web institucional estático de Capellanía Empresarial Uruguay. Presenta la organización, sus servicios, misión, visión, valores, indicadores pendientes de confirmación, galería institucional, datos de contacto y acceso al canal de Impulso+.
+Sitio web institucional de Capellanía Empresarial Uruguay. Está desarrollado como un sitio estático, responsive y accesible, sin frameworks de frontend ni servicios de backend.
 
-La versión de desarrollo permanece excluida de buscadores hasta que se confirme el dominio definitivo y se autorice la publicación.
+## Arquitectura y herramientas
 
-## Características principales
+- **HTML5 estático** para la home y la galería.
+- **CSS propio** para el sistema visual, responsive y animaciones.
+- **JavaScript nativo** para navegación móvil, video, galería y mejoras de interacción.
+- **JSON** para administrar el contenido de la galería.
+- **Node.js y npm** únicamente para generar y validar la versión publicable.
+- **Cloudflare Pages** como plataforma prevista de alojamiento.
 
-- Home responsive con Hero, presentación institucional, video, servicios, misión, visión, valores, impacto, labor en imágenes y contacto.
-- Galería con visor accesible mediante teclado y soporte para filtros cuando existan varias categorías.
-- Menú adaptable a escritorio y dispositivos móviles.
-- Botones de contacto por correo, Instagram y WhatsApp.
-- Acceso desde la home al canal de WhatsApp de Impulso+.
-- Metadatos SEO, Open Graph, Twitter Card, sitemap y `robots.txt` generados durante la compilación.
-- Soporte para navegación por teclado y `prefers-reduced-motion`.
+No utiliza React, Vue, Next.js, Tailwind, bases de datos ni APIs privadas.
+
+## Páginas y funcionalidades
+
+- Home institucional con Hero, presentación, misión, visión, valores, servicios, impacto, video y contacto.
+- Sección Impulso+ con acceso al canal compartido de WhatsApp.
+- Galería responsive con visor accesible mediante teclado.
+- Navegación móvil con soporte para teclado y tecla `Escape`.
+- Enlaces a WhatsApp, Instagram y correo institucional.
+- Metadatos SEO, Open Graph, Twitter Card, sitemap y `robots.txt` generados durante el build.
+- Soporte para `prefers-reduced-motion`.
 
 ## Estructura del proyecto
 
 ```text
 assets/
-  data/       Datos de la galería.
-  images/     Imágenes publicadas por la home y la galería.
-  js/         Interacciones nativas del sitio.
-  logos/      Identidad visual de Uruguay e Impulso+.
-  video/      Video y póster de la sección institucional.
-css/          Hoja de estilos global.
-galeria/      Página de galería.
-scripts/      Compilador estático y validación de configuración.
+  data/       Información y descripciones de la galería.
+  images/     Imágenes de la home, galería y Open Graph.
+  js/         Interacciones del sitio en JavaScript nativo.
+  logos/      Logos, favicon e identidad visual.
+  video/      Video institucional y su imagen de portada.
+css/          Estilos globales y responsive.
+galeria/      Página independiente de la galería.
+scripts/      Build estático y validación de configuración.
 index.html    Página principal.
 site.config.json  Dominio, indexación y rutas públicas.
-vercel.json   Configuración de compilación y encabezados para Vercel.
+_headers      Encabezados de seguridad para Cloudflare Pages.
 ```
+
+La carpeta `dist/` se genera automáticamente y no debe editarse ni subirse a Git.
 
 ## Requisitos
 
 - Node.js con soporte para módulos ES.
 - npm.
 
-El proyecto se verificó durante la preparación institucional con Node.js `22.16.0` y npm `10.9.2`. No requiere frameworks ni servicios de backend para generar el sitio.
+El proyecto fue verificado con Node.js `22.16.0` y npm `10.9.2`.
 
-## Instalación y ejecución local
+## Ejecución local
 
 ```bash
 npm install
@@ -46,63 +57,91 @@ npm run build
 npx serve dist
 ```
 
-También puede servirse `dist/` con cualquier servidor HTTP estático. Abrir los archivos directamente con `file://` no reproduce correctamente las rutas absolutas del sitio.
+El sitio debe abrirse mediante un servidor HTTP local. Las rutas absolutas no funcionan correctamente abriendo los HTML directamente con `file://`.
 
-## Configuración
+## Configuración del sitio
 
-La configuración pública se encuentra en `site.config.json`:
+El archivo `site.config.json` controla:
 
-- `siteUrl`: origen utilizado en canonical, Open Graph, JSON-LD y sitemap.
-- `siteUrlConfirmed`: debe ser `true` únicamente cuando el dominio sea definitivo.
-- `provisionalSiteUrls`: dominios que el build de producción debe rechazar.
-- `indexable`: controla `index`/`noindex` y la publicación del sitemap en `robots.txt`.
-- `trailingSlash`: conserva rutas compatibles con alojamiento estático.
-- `routes`: relaciona cada URL pública con su archivo fuente.
+- `siteUrl`: dominio utilizado en canonical, Open Graph, JSON-LD y sitemap.
+- `siteUrlConfirmed`: confirma que el dominio ya es definitivo.
+- `provisionalSiteUrls`: dominios que no deben aparecer en producción.
+- `indexable`: activa o bloquea la indexación en buscadores.
+- `trailingSlash`: formato de las rutas públicas.
+- `routes`: páginas incluidas en el build.
 
-El build admite `SITE_URL`, `SITE_INDEXABLE` y `SITE_PRODUCTION` como ajustes de entorno. El sitio actual no necesita credenciales ni variables secretas.
+Mientras el dominio no esté confirmado, el sitio se genera con `noindex` y el build de producción permanece bloqueado.
 
-## Publicación
+## Mantenimiento de contenido
 
-Para una vista previa segura:
+### Textos y secciones
+
+La home se mantiene en `index.html`. Antes de publicar cambios institucionales, confirmar nombres, cifras, teléfonos, correos, enlaces y textos con Capellanía Empresarial Uruguay.
+
+### Galería
+
+- Datos y descripciones: `assets/data/galeria.json`.
+- Imágenes: `assets/images/galeria/`.
+- Cada fotografía dispone de una variante optimizada de 800 px y otra de tamaño completo.
+- El visor utiliza la imagen completa y las tarjetas utilizan la variante optimizada.
+
+### Estilos
+
+Los estilos están en `css/capellania-global.css`. Si se modifica este archivo, actualizar el parámetro de versión del enlace CSS en `index.html` y `galeria/index.html` para evitar que el navegador conserve una versión anterior en caché.
+
+### JavaScript
+
+- `assets/js/uy-site.js`: menú móvil y animaciones de aparición.
+- `assets/js/uy-video.js`: controles del video institucional.
+- `assets/js/galeria-uruguay.js`: tarjetas, filtros y visor de galería.
+
+### Imágenes, logos y video
+
+Los recursos que deben publicarse se enumeran en `scripts/build-static.js`. Cuando se añada un nuevo recurso fuera de una carpeta ya incluida, incorporarlo también a esa lista.
+
+## Validación antes de publicar
+
+Ejecutar siempre:
 
 ```bash
 npm run build
 ```
 
-Para producción, primero debe confirmarse el dominio en `site.config.json`, retirarse de `provisionalSiteUrls` y habilitarse la indexación cuando corresponda. Después:
+Después revisar:
+
+- Home y `/galeria/`.
+- Navegación en escritorio y móvil.
+- Ausencia de scroll horizontal.
+- Imágenes, video, botones y enlaces externos.
+- Consola del navegador.
+- Contenido pendiente y metadatos SEO.
+
+Cuando el dominio sea definitivo, actualizar `site.config.json` y ejecutar:
 
 ```bash
 npm run build:production
 ```
 
-En Vercel, la configuración incluida ejecuta `npm run build` y publica `dist/`. Antes de la salida pública debe cambiarse el comando del proyecto a `npm run build:production` o definirse `SITE_PRODUCTION=true`, para que una configuración provisional haga fallar el despliegue.
+El build de producción se detiene si el dominio continúa marcado como provisional.
 
-### Repositorio institucional con historial nuevo
+## Despliegue en Cloudflare Pages
 
-Para entregar una copia independiente sin trasladar el historial experimental:
+Conectar este repositorio desde el panel de Cloudflare Pages y utilizar:
 
-1. Crear un repositorio vacío en la cuenta oficial de Capellanía Uruguay.
-2. Exportar el árbol aprobado sin la carpeta `.git`, `dist/`, `_instagram/` ni archivos locales.
-3. Inicializar Git en la copia exportada y crear un único commit raíz con identidad institucional.
-4. Añadir el remoto oficial y publicar la rama `main` solamente después de revisar el contenido.
-5. Activar protección de rama, autenticación de dos factores, revisión de cambios, secret scanning y push protection.
+```text
+Comando de build: npm run build:production
+Directorio de salida: dist
+Directorio raíz: /
+```
 
-## Mantenimiento
+Para una vista previa antes de confirmar el dominio puede utilizarse `npm run build`, que mantiene `noindex`.
 
-- Textos y secciones de la home: `index.html`.
-- Contenido y descripciones de la galería: `assets/data/galeria.json`.
-- Imágenes de galería: `assets/images/galeria/`; conservar las variantes de 800 px y tamaño completo.
-- Estilos: `css/capellania-global.css`.
-- Navegación, menú móvil y animaciones de aparición: `assets/js/uy-site.js`.
-- Visor de galería: `assets/js/galeria-uruguay.js`.
-- Dominio e indexación: `site.config.json`.
-
-Después de cualquier cambio, ejecutar `npm run build` y comprobar la home y `/galeria/` en escritorio y móvil. Mantener el número de versión de la hoja de estilos en las páginas cuando cambie CSS para evitar caché obsoleta.
+Cloudflare Pages instalará las dependencias declaradas en `package-lock.json`, ejecutará el comando configurado y publicará únicamente el contenido generado en `dist/`.
 
 ## Enlaces externos
 
-- Impulso+: la sección `#impulso` abre el canal compartido de WhatsApp configurado en `index.html`. No existe una página local ni una copia del contenido del canal.
-- Presupuesto: el botón de contacto abre WhatsApp con un mensaje inicial.
-- Contacto institucional: correo e Instagram se encuentran en el footer de la home y la galería.
+- Impulso+: configurado en la sección `#impulso` de `index.html`.
+- Solicitud de presupuesto: enlace de WhatsApp en `index.html`.
+- Correo e Instagram: footer de `index.html` y `galeria/index.html`.
 
-Revisar periódicamente que estos destinos sigan vigentes y correspondan a cuentas autorizadas por Capellanía Empresarial Uruguay.
+Revisar periódicamente que estos destinos continúen vigentes y autorizados.
