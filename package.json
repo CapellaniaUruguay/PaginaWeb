@@ -1,0 +1,11 @@
+{
+  "name": "capellania-empresarial-uruguay",
+  "version": "1.0.0",
+  "description": "Sitio web institucional de Capellanía Empresarial Uruguay",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build-static.js",
+    "build:production": "node scripts/build-static.js --production"
+  }
+}
